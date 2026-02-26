@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Cyber Clock</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            cursor: none;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            perspective: 1000px;
+            position: relative;
+        }
+
+        .cyber-core {
+            position: relative;
+            transform-style: preserve-3d;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .clock-holo {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .hologram-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #0ff;
+            box-shadow: 0 0 30px #0ff;
+            animation: rotate 20s linear infinite;
+            transform-style: preserve-3d;
+        }
+
+        .hologram-ring:nth-child(2) {
+            animation-direction: reverse;
+            border-color: #f0f;
+            box-shadow: 0 0 30px #f0f;
+            width: 80%;
+            height: 80%;
+            margin: 10%;
+        }
+
+        .hologram-ring:nth-child(3) {
+            width: 120%;
+            height: 120%;
+            margin: -10%;
+            animation-duration: 25s;
+            border-color: #0f0;
+            box-shadow: 0 0 30px #0f0;
+        }
+
+        .time-matrix {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4em;
+            color: #0ff;
+            text-shadow: 0 0 20px #0ff;
+            transform: translateZ(50px);
+            background: radial-gradient(circle, #000 40%, transparent 100%);
+        }
+
+        .binary-rain {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            transform: translateZ(-100px);
+        }
+
+        .particle-wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: pulse 3s infinite;
+        }
+
+        .dna-helix {
+            position: absolute;
+            width: 200px;
+            height: 400px;
+            transform: translateZ(-200px);
+            animation: helixRotate 15s linear infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(5deg) rotateY(5deg); }
+            50% { transform: translateY(-20px) rotateX(-5deg) rotateY(-5deg); }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotateZ(0deg) rotateX(60deg); }
+            100% { transform: rotateZ(360deg) rotateX(60deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        @keyframes helixRotate {
+            0% { transform: translateZ(-200px) rotateY(0deg); }
+            100% { transform: translateZ(-200px) rotateY(360deg); }
+        }
+
+        .neon-text {
+            animation: neonGlitch 1s infinite;
+        }
+
+        @keyframes neonGlitch {
+            0% { text-shadow: 0 0 20px #0ff; }
+            50% { text-shadow: 3px 3px 30px #f0f, -3px -3px 30px #0f0; }
+            100% { text-shadow: 0 0 20px #0ff; }
+        }
+
+        .shockwave {
+            position: absolute;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            animation: shockwave 1s ease-out;
+        }
+
+        @keyframes shockwave {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cyber-core">
+            <div class="clock-holo">
+                <div class="hologram-ring"></div>
+                <div class="hologram-ring"></div>
+                <div class="hologram-ring"></div>
+                <div class="time-matrix neon-text" id="time">00:00:00</div>
+                <div class="dna-helix" id="dna"></div>
+            </div>
+            <div class="binary-rain" id="binary"></div>
+        </div>
+    </div>
+
+    <script>
+        const timeDisplay = document.getElementById('time');
+        const dna = document.getElementById('dna');
+        const binaryRain = document.getElementById('binary');
+        let mouseX = 0, mouseY = 0;
+
+        // 3D Clock Animation
+        function updateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            timeDisplay.innerHTML = time.split(':').map(part => 
+                `<span style="display: inline-block; transform: rotateZ(${Math.random() * 2}deg)">${part}</span>`
+            ).join(':');
+            
+            // Create floating particles
+            createBinaryParticles();
+            updateDNAHelix();
+        }
+
+        // DNA Helix Animation
+        function updateDNAHelix() {
+            let helixHTML = '';
+            for(let i = 0; i < 20; i++) {
+                const rotation = i * 18;
+                helixHTML += `
+                    <div style="position: absolute; transform: rotateZ(${rotation}deg) translateY(100px);
+                        color: hsl(${i * 18}, 100%, 50%);">${Math.random() > 0.5 ? '0' : '1'}</div>
+                `;
+            }
+            dna.innerHTML = helixHTML;
+        }
+
+        // Binary Particle Rain
+        function createBinaryParticles() {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            particle.style.fontSize = Math.random() * 20 + 10 + 'px';
+            particle.textContent = Math.random() > 0.5 ? '0' : '1';
+            particle.style.animation = `fall ${Math.random() * 2 + 1}s linear`;
+            binaryRain.appendChild(particle);
+
+            setTimeout(() => particle.remove(), 2000);
+        }
+
+        // Mouse Interaction
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            createShockwave(e.clientX, e.clientY);
+        });
+
+        function createShockwave(x, y) {
+            const wave = document.createElement('div');
+            wave.className = 'shockwave';
+            wave.style.left = x + 'px';
+            wave.style.top = y + 'px';
+            document.body.appendChild(wave);
+            setTimeout(() => wave.remove(), 1000);
+        }
+
+        // Audio Reactive Elements
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let analyser;
+
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                analyser.fftSize = 256;
+            })
+            .catch(err => console.log('Enable microphone for audio reactivity'));
+
+        function audioUpdate() {
+            if(analyser) {
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(dataArray);
+                const energy = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                document.documentElement.style.setProperty('--energy', energy / 100);
+            }
+            requestAnimationFrame(audioUpdate);
+        }
+        audioUpdate();
+
+        // Initialize
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Dynamic Background
+        function createFloatingOrbs() {
+            const orb = document.createElement('div');
+            orb.style.position = 'absolute';
+            orb.style.width = '50px';
+            orb.style.height = '50px';
+            orb.style.background = `radial-gradient(circle, 
+                hsl(${Math.random() * 360}, 100%, 50%), 
+                transparent 70%)`;
+            orb.style.left = Math.random() * 100 + '%';
+            orb.style.top = Math.random() * 100 + '%';
+            orb.style.borderRadius = '50%';
+            orb.style.filter = 'blur(10px)';
+            orb.style.animation = `float ${Math.random() * 10 + 5}s infinite`;
+            document.body.appendChild(orb);
+        }
+
+        // Generate floating orbs
+        for(let i = 0; i < 20; i++) {
+            createFloatingOrbs();
+        }
+    </script>
+</body>
+</html>
